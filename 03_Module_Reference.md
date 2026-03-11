@@ -1,918 +1,256 @@
-\# Timberwolf Server – Modulreferenz
+# Timberwolf Server -- Module Reference
 
+This file contains the canonical reference of all Custom Logic modules
+of the Timberwolf Server. It defines the valid syntax and serves as the
+authoritative source for module parameters, inputs, outputs and
+behavior.
 
+------------------------------------------------------------------------
 
-Diese Datei enthält die \*\*kanonische Referenz aller validierten Kernmodule\*\* der Timberwolf Custom Logic.
+# Module Index
 
+Polynomial Ratio Limiter Comparator And Or Xor Clocksignal Monoflop
+Latch Multiplexer JsonPathSelector HEX-\>INT STR-\>FLOAT STR-\>INT
+Printf Regex Stopwatch PID controller PID_awu Statemachine Statistic
+Ramp Astro Localtime Wakeup SendToSimple SendExplicit Triggered
+Interpolation Lowpass SingleDigitCounter Dim-Aktor Verschluss-Status
+Verschluss-Statistik
 
+------------------------------------------------------------------------
 
-Zweck dieser Referenz:
+# Polynomial
 
+Purpose: Universal polynomial calculation.
 
+Syntax: \[ "Polynomial", "Input_X", "Output_Y", \[ "$A0", "$A1", ... \]
+\]
 
-\- eindeutige Modulsyntax
+Alternative: \[ "Polynomial", "Input_X", "Output_Y", \[
+"\$VAR\<Koeff!\>" \] \]
 
-\- Dokumentation der Parameterstruktur
+Hardening Rule: Numeric literals in coefficient arrays are forbidden
+(ANTI-MAGIC-NUMBERS).
 
-\- Beschreibung kritischer Systemregeln
+------------------------------------------------------------------------
 
-\- Referenz für AI-Systeme
+# Ratio
 
+Purpose: Division
 
+Syntax: \[ "Ratio", "Zaehler", "Ergebnis", "\$Nenner" \]
 
-Diese Datei ist \*\*die maßgebliche Quelle für Modulsyntax und Modulparameter\*\*.
+Critical Rule: Division by zero must be prevented.
 
+------------------------------------------------------------------------
 
+# Limiter
 
-Wenn ein Modul hier definiert ist, darf \*\*keine alternative Syntax verwendet werden\*\*.
+Purpose: Clamp value between min and max
 
+Syntax: \[ "Limiter", "Input", "Out_Clamped", "Out_IsInRange", \[
+"$Min", "$Max" \] \]
 
+------------------------------------------------------------------------
 
----
+# Comparator
 
+Purpose: Threshold comparison
 
+Syntax: \[ "Comparator", "A", "Out", "B" \]
 
-\# Modulstruktur
+Hysteresis: \[ "Comparator", "A", "Out", \[
+"$Schwelle_Aus", "$Schwelle_Ein" \] \]
 
+------------------------------------------------------------------------
 
+# Logic Gates
 
-Jedes Modul ist im Kanon wie folgt beschrieben:
+Modules: And / Or / Xor
 
+Syntax: \[ "Or", \[ "In_A", "In_B", ... \], "Out" \] or \[ "Or", \[
+"\$VAR\<In!\>" \], "Out" \]
 
+Inputs must be boolean.
 
-Module Name  
+------------------------------------------------------------------------
 
-Funktion  
+# Clocksignal
 
-Syntax  
+Syntax: \[ "Clocksignal", "Enable", "Output_Clock", "\$Perioden_Halbe_s"
+\]
 
-kritische Regeln  
+------------------------------------------------------------------------
 
-Härtungsregeln  
+# Monoflop
 
-Hinweise
+Syntax: \[ "Monoflop", "Set", "Reset", "Out", "Zeit_s", Mode_Int_Literal
+\]
 
+Modes: 0 level 1 rising edge 2 falling edge 3 both edges
 
+------------------------------------------------------------------------
 
-Die Syntaxzeile ist \*\*verbindlich\*\*.
+# Latch
 
+Syntax: \[ "Latch", "Input", "Output", "Trigger", Mode_Int_Literal \]
 
+------------------------------------------------------------------------
 
----
+# Multiplexer
 
+Syntax: \[ "Multiplexer", \[ "$Wert_0", "$Wert_1", ...\], "Output",
+"Selektor_Int" \] or \[ "Multiplexer", \[ "\$VAR\<In!\>" \], "Output",
+"Selektor_Int" \]
 
+------------------------------------------------------------------------
 
-\# Polynomial
+# JsonPathSelector
 
+Syntax: \[ "JsonPathSelector", "Input_Json", "JsonPath", "Output",
+"Error" \]
 
+------------------------------------------------------------------------
 
-\## Zweck
+# HEX-\>INT
 
+Syntax: \[ "HEX-\>INT", "Input_Hex_String", "Output_Integer",
+"$ByteSwap_Bool", "$WordSwap_Bool" \]
 
+------------------------------------------------------------------------
 
-Berechnet eine Polynomfunktion:
+# STR-\>FLOAT
 
+Syntax: \[ "STR-\>FLOAT", "Input_String", "Output_Float" \]
 
+------------------------------------------------------------------------
 
-Y = A0 + A1·X + A2·X² ...
+# Printf
 
+Syntax: \[ "Printf", "Input_Wert", "Format_String", "Output_String" \]
 
+------------------------------------------------------------------------
 
-Dieses Modul dient als universeller mathematischer Baustein.
+# Regex
 
+Syntax: \[ "Regex", "Input_Str", "Pattern_Str", "Match_Bool",
+"Full_Match", "Grp1", "Grp2", "Grp3", "Grp4", "\$Grp5" \]
 
+------------------------------------------------------------------------
 
-Typische Anwendungen:
+# Stopwatch
 
+Syntax: \[ "Stopwatch", "StartStop_Bool", "Time_s_Float" \]
 
+------------------------------------------------------------------------
 
-\- Addition
+# PID controller
 
-\- Multiplikation
+Syntax: \[ "PID controller", "Soll_float", "Ist_float", "Stell_float",
+"Kp_float", "Ki_float", "Kd_float" \]
 
-\- Differenzbildung
+------------------------------------------------------------------------
 
-\- lineare Skalierung
+# PID_awu
 
+Syntax: \[ "PID_awu", "Soll_f", "Ist_f", "Stell_f", "Kp_f", "Ki_f",
+"Kd_f", "Untergrenze_f", "Obergrenze_f" \]
 
+------------------------------------------------------------------------
 
-\## Syntax
+# Statemachine
 
+Syntax: \[ "Statemachine", \[ \[Transition1\], \[Transition2\], ... \],
+"Output_State_Int"\]
 
+------------------------------------------------------------------------
 
-\[ "Polynomial", "Input\_X", "Output\_Y", \[ "$A0", "$A1", ... ] ]
+# Statistic
 
+Syntax: \[ "Statistic", \[ "Input1", ... \], "Out_Min", "Out_Max",
+"Out_Mean", "\$Out_Median" \]
 
+------------------------------------------------------------------------
 
-oder
+# Ramp
 
+Syntax: \["Ramp", "$Ziel", "$Out", "$Active", "$Step", "\$Period"\]
 
+------------------------------------------------------------------------
 
-\[ "Polynomial", "Input\_X", "Output\_Y", \[ "$VAR<Koeff!>" ] ]
+# Astro
 
+Syntax: \[ "Astro", \[ "$Latitude", "$Longitude" \], "Altitude",
+"Azimute", "Transit", "Sunrise", "Sunset", "Civildawn" \]
 
+------------------------------------------------------------------------
 
-\## Härtungsregeln
+# Localtime
 
+Syntax: \[ "Localtime", 0, "UnixOut", "Sec_Out", "Min_Out", "Hour_Out"
+\]
 
+------------------------------------------------------------------------
 
-ANTI-MAGIC-NUMBERS
+# Wakeup
 
+Syntax: \[ "Wakeup", "UnixTimestamp_In", "Alarm_Out_Bool" \]
 
+------------------------------------------------------------------------
 
-Numerische Literale in Koeffizientenarrays sind verboten.
+# SendToSimple
 
+Syntax: \[ "SendToSimple", "Inhibit", "Channel", "Title", "Message",
+"Category", "Priority" \]
 
+------------------------------------------------------------------------
 
-Auch Werte wie:
+# SendExplicit
 
+Syntax: \[ "SendExplicit", "Sende_Bedingung_Bool", "Variable_mit_Wert",
+Sende_Option_Int_Literal \]
 
+------------------------------------------------------------------------
 
-0  
+# Triggered
 
-1  
+Syntax: \[ "Triggered", "Input", "Touched_Output_Bool" \]
 
--1
+------------------------------------------------------------------------
 
+# Interpolation
 
+Syntax: \[ "Interpolation", "In_X", "Out_Y", \[ \["$X1", "$Y1"\],
+\["$X2", "$Y2"\] \] \]
 
-müssen als Variablen definiert werden.
+------------------------------------------------------------------------
 
+# Lowpass
 
+Syntax: \[ "Lowpass", "Input", "Output", "\$Zeitkonstante_s" \]
 
----
+------------------------------------------------------------------------
 
+# SingleDigitCounter
 
+Syntax: \["SingleDigitCounter", \["$In1", "$In2"\], "$Cnt0", "$Cnt1",
+"$Cnt2", "$Cnt3", "$Cnt4", "$Cnt5", "$Cnt6", "$Cnt7", "$Cnt8", "$Cnt9"\]
 
-\# Addition
+------------------------------------------------------------------------
 
+# Dim-Aktor
 
+Syntax: \["Dim-Aktor", "$In_Relativ", "$Out_Absolut", "\$Inhibit"\]
 
-Addition wird über das Polynomial-Modul implementiert.
+------------------------------------------------------------------------
 
+# Verschluss-Status
 
+Syntax: \["Verschluss-Status", "$Kipp", "$Offen",
+"$StatusInt", "$OffenBool", "\$Text"\]
 
-Y = X + A0
+------------------------------------------------------------------------
 
+# Verschluss-Statistik
 
-
-\## Syntax
-
-
-
-\[ "Polynomial", "Summand1\_X", "Summe\_Y", \[ "$Summand2\_A0", "$Konst\_1\_Float" ] ]
-
-
-
----
-
-
-
-\# Multiplikation
-
-
-
-Multiplikation wird über Polynomial emuliert.
-
-
-
-\## Syntax
-
-
-
-\[ "Polynomial", "FaktorA", "Produkt", \[ "$Konst\_0\_Float", "$FaktorB" ] ]
-
-
-
----
-
-
-
-\# Subtraktion
-
-
-
-Subtraktion wird über zwei Schritte realisiert:
-
-
-
-1\. Negation
-
-2\. Addition
-
-
-
-Direkte Integration negativer Werte im Polynomial ist verboten.
-
-
-
----
-
-
-
-\# Ratio (Division)
-
-
-
-\## Funktion
-
-
-
-Division:
-
-
-
-Ergebnis = Zaehler / Nenner
-
-
-
-\## Syntax
-
-
-
-\[ "Ratio", "Zaehler", "Ergebnis", "$Nenner" ]
-
-
-
-\## Kritische Regel
-
-
-
-Division durch Null muss verhindert werden.
-
-
-
-Empfohlene Absicherung:
-
-
-
-Limiter auf Nenner:
-
-
-
->= 0.001
-
-
-
----
-
-
-
-\# Limiter
-
-
-
-\## Funktion
-
-
-
-Begrenzt einen Wert auf ein Minimum und Maximum.
-
-
-
-\## Syntax
-
-
-
-\[ "Limiter", "Input", "Out\_Clamped", "Out\_IsInRange", \[ "$Min", "$Max" ] ]
-
-
-
----
-
-
-
-\# And / Or / Xor
-
-
-
-Logische Gatter.
-
-
-
-\## Syntax
-
-
-
-\[ "Or", \[ "In\_A", "In\_B", ... ], "Out" ]
-
-
-
-oder
-
-
-
-\[ "Or", \[ "$VAR<In!>" ], "Out" ]
-
-
-
-Analog:
-
-
-
-And  
-
-Xor
-
-
-
-\## Regel
-
-
-
-Alle Inputs müssen vom Typ \*\*bool\*\* sein.
-
-
-
----
-
-
-
-\# Comparator
-
-
-
-Schwellwertschalter.
-
-
-
-\## Syntax
-
-
-
-\[ "Comparator", "A", "Out", "B" ]
-
-
-
-Out wird TRUE wenn
-
-
-
-A > B
-
-
-
-\## Hysterese
-
-
-
-\[ "Comparator", "A", "Out", \[ "$Schwelle\_Aus", "$Schwelle\_Ein" ] ]
-
-
-
----
-
-
-
-\# Clocksignal
-
-
-
-Taktsignal.
-
-
-
-\## Syntax
-
-
-
-\[ "Clocksignal", "Enable", "Output\_Clock", "$Perioden\_Halbe\_s" ]
-
-
-
-Besitzt implizite Trigger-Eigenschaft.
-
-
-
----
-
-
-
-\# Monoflop
-
-
-
-Timer-Modul.
-
-
-
-\## Syntax
-
-
-
-\[ "Monoflop", "Set", "Reset", "Out", "Zeit\_s", Mode\_Int\_Literal ]
-
-
-
-Mode bestimmt:
-
-
-
-\- Pegel
-
-\- Flanke
-
-\- Retrigger
-
-
-
----
-
-
-
-\# Latch
-
-
-
-Speichert Werte.
-
-
-
-\## Syntax
-
-
-
-\[ "Latch", "Input", "Output", "Trigger", Mode\_Int\_Literal ]
-
-
-
-Modes:
-
-
-
-0 Pegel  
-
-1 steigende Flanke  
-
-2 fallende Flanke  
-
-3 beide Flanken
-
-
-
----
-
-
-
-\# Multiplexer
-
-
-
-Wählt einen Wert aus einer Liste.
-
-
-
-\## Syntax
-
-
-
-\[ "Multiplexer", \[ "$Wert\_0", "$Wert\_1", ...], "Output", "Selektor\_Int" ]
-
-
-
-oder
-
-
-
-\[ "Multiplexer", \[ "$VAR<In!>" ], "Output", "Selektor\_Int" ]
-
-
-
----
-
-
-
-\# JsonPathSelector
-
-
-
-Extrahiert Daten aus JSON.
-
-
-
-\## Syntax
-
-
-
-\[ "JsonPathSelector", "Input\_Json", "JsonPath", "Output", "Error" ]
-
-
-
----
-
-
-
-\# HEX->INT
-
-
-
-Konvertiert Hex-String in Integer.
-
-
-
-\## Syntax
-
-
-
-\[ "HEX->INT", "Input\_Hex\_String", "Output\_Integer", "$ByteSwap\_Bool", "$WordSwap\_Bool" ]
-
-
-
----
-
-
-
-\# STR->FLOAT / STR->INT
-
-
-
-Konvertiert Strings in Zahlen.
-
-
-
-\## Syntax
-
-
-
-\[ "STR->FLOAT", "Input\_String", "Output\_Float" ]
-
-
-
----
-
-
-
-\# Printf
-
-
-
-Formatiert Strings.
-
-
-
-\## Syntax
-
-
-
-\[ "Printf", "Input\_Wert", "Format\_String", "Output\_String" ]
-
-
-
----
-
-
-
-\# Regex
-
-
-
-Wendet reguläre Ausdrücke auf Strings an.
-
-
-
-\## Syntax
-
-
-
-\[ "Regex", "Input\_Str", "Pattern\_Str", "Match\_Bool", "Full\_Match", "Grp1", "Grp2", "Grp3", "Grp4", "$Grp5" ]
-
-
-
----
-
-
-
-\# Stopwatch
-
-
-
-Misst Laufzeit.
-
-
-
-\## Syntax
-
-
-
-\[ "Stopwatch", "StartStop\_Bool", "Time\_s\_Float" ]
-
-
-
----
-
-
-
-\# PID controller
-
-
-
-\## Syntax
-
-
-
-\[ "PID controller", "Soll\_float", "Ist\_float", "Stell\_float", "Kp\_float", "Ki\_float", "Kd\_float" ]
-
-
-
----
-
-
-
-\# PID\_awu
-
-
-
-PID mit Anti-Windup.
-
-
-
-\## Syntax
-
-
-
-\[ "PID\_awu", "Soll\_f", "Ist\_f", "Stell\_f", "Kp\_f", "Ki\_f", "Kd\_f", "Untergrenze\_f", "Obergrenze\_f" ]
-
-
-
----
-
-
-
-\# Statemachine
-
-
-
-Zustandsautomat.
-
-
-
-\## Syntax
-
-
-
-\[ "Statemachine", \[ \[Transition1], \[Transition2], ... ], "Output\_State\_Int"]
-
-
-
----
-
-
-
-\# Statistic
-
-
-
-Statistikmodul.
-
-
-
-\## Syntax
-
-
-
-\[ "Statistic", \[ "Input1", ... ], "Out\_Min", "Out\_Max", "Out\_Mean", "$Out\_Median" ]
-
-
-
----
-
-
-
-\# Ramp
-
-
-
-Begrenzt Änderungsrate.
-
-
-
-\## Syntax
-
-
-
-\["Ramp", "$Ziel", "$Out", "$Active", "$Step", "$Period"]
-
-
-
----
-
-
-
-\# Astro
-
-
-
-Astronomische Berechnungen.
-
-
-
-\## Syntax
-
-
-
-\[ "Astro", \[ "$Latitude", "$Longitude" ], "Altitude", "Azimute", "Transit", "Sunrise", "Sunset", "Civildawn", ... ]
-
-
-
----
-
-
-
-\# Localtime
-
-
-
-Zeitstempel-Konverter.
-
-
-
-\## Syntax
-
-
-
-\[ "Localtime", 0, "UnixOut", "Sec\_Out", "Min\_Out", "Hour\_Out", ... ]
-
-
-
----
-
-
-
-\# Wakeup
-
-
-
-Einmaliger Timer.
-
-
-
-\## Syntax
-
-
-
-\[ "Wakeup", "UnixTimestamp\_In", "Alarm\_Out\_Bool" ]
-
-
-
----
-
-
-
-\# SendToSimple
-
-
-
-Sendet Nachrichten.
-
-
-
-\## Syntax
-
-
-
-\[ "SendToSimple", "Inhibit", "Channel", "Title", "Message", "Category", "Priority" ]
-
-
-
----
-
-
-
-\# SendExplicit
-
-
-
-Erzwingt Sendeaktion.
-
-
-
-\## Syntax
-
-
-
-\[ "SendExplicit", "Sende\_Bedingung\_Bool", "Variable\_mit\_Wert", Sende\_Option\_Int\_Literal ]
-
-
-
----
-
-
-
-\# Triggered
-
-
-
-Identifiziert Triggerquelle.
-
-
-
-\## Syntax
-
-
-
-\[ "Triggered", "Input", "Touched\_Output\_Bool" ]
-
-
-
----
-
-
-
-\# Interpolation
-
-
-
-Berechnet Werte zwischen Stützpunkten.
-
-
-
-\## Syntax
-
-
-
-\[ "Interpolation", "In\_X", "Out\_Y", \[ \["$X1", "$Y1"], \["$X2", "$Y2"], ... ] ]
-
-
-
----
-
-
-
-\# Lowpass
-
-
-
-Digitaler Tiefpassfilter.
-
-
-
-\## Syntax
-
-
-
-\[ "Lowpass", "Input", "Output", "$Zeitkonstante\_s" ]
-
-
-
----
-
-
-
-\# SingleDigitCounter
-
-
-
-Histogramm für Werte 0-9.
-
-
-
-\## Syntax
-
-
-
-\["SingleDigitCounter", \["$In1", "$In2"...], "$Cnt0", "$Cnt1", ..., "$Cnt9"]
-
-
-
----
-
-
-
-\# Dim-Aktor
-
-
-
-Relativ → Absolut Dimmer.
-
-
-
-\## Syntax
-
-
-
-\["Dim-Aktor", "$In\_Relativ", "$Out\_Absolut", "$Inhibit"]
-
-
-
----
-
-
-
-\# Verschluss-Status / Verschluss-Statistik
-
-
-
-Fensterstatusmodule.
-
-
-
-\## Syntax
-
-
-
-\["Verschluss-Status", "$Kipp", "$Offen", "$StatusInt", "$OffenBool", "$Text"]
-
-
-
-\["Verschluss-Statistik", \["$StatusInt1", ...], "$AnzahlOffen", "$AnzahlGekippt", "$AllesZu"]
-
+Syntax: \["Verschluss-Statistik", \["$StatusInt1"], "$AnzahlOffen",
+"$AnzahlGekippt", "$AllesZu"\]
